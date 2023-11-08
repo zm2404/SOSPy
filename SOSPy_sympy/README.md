@@ -4,7 +4,7 @@ This package contains functions based on **sympy** package. However, in case of 
 
 Demos are in the folder [SOSPy_demos](https://github.com/zm2404/SOSPy/tree/main/SOSPy_demos/Sympy_demos).
 
-:point_right:**All updates from now on will be updated to SOSPy**  https://pypi.org/project/SOSPy/
+:point_right:**All updates from now on will be updated to SOSPy**  [https://pypi.org/project/SOSPy/](https://github.com/zm2404/SOSPy/tree/main/SOSPy)
 
 ### Updates in version 0.1.11:
 - Fix bugs in findsos().
