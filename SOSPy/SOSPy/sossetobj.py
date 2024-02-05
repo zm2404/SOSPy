@@ -1,6 +1,7 @@
 from sympy import diff, simplify
+from .sosprogram import sosprogram
 
-def sossetobj(sos, symexpr):
+def sossetobj(sos:sosprogram, symexpr) -> sosprogram:
     '''
     SOSSETOBJ --- Set the objective function of an SOS program. 
 

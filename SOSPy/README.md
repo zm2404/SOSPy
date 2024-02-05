@@ -4,6 +4,9 @@ This package contains functions based on **sympy** package. However, in case of 
 
 Demos are in the folder [SOSPy_demos](https://github.com/zm2404/SOSPy/tree/main/SOSPy_demos/Sympy_demos).
 
+### Updates in version 0.2.9:
+- Add some data type annotations
+
 ### Updates in version 0.2.8:
 - Fix bugs in **sossolve()**
 

@@ -1,7 +1,10 @@
-from sympy import symbols
+from sympy import symbols, MatrixBase
 from .sosvar import sosvar
 
-def sospolyvar(sos,Zsym):
+from .sosprogram import sosprogram
+from sympy.core.symbol import Symbol
+
+def sospolyvar(sos:sosprogram, Zsym:int|float|list[Symbol]) -> tuple[sosprogram, MatrixBase]:
     '''
     SOSPOLYVAR --- Declare a new scalar polynomial variable in
         an SOS program

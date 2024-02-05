@@ -1,9 +1,12 @@
-import sympy
-from sympy import diff, oo
+#import sympy
+from .sosprogram import sosprogram
+from sympy import diff, oo, MatrixBase
 from .sosconstr import sosconstr
+from sympy.core.add import Add
+from sympy.core.symbol import Symbol
 
 
-def preprocess(symexpr, var, info):
+def preprocess(symexpr:Add, var:Symbol, info:list) -> Add:
     # Get the maximum degree of the independent variable
     maxdeg = 0
     dummy = diff(symexpr, var)
@@ -26,7 +29,7 @@ def preprocess(symexpr, var, info):
 
 
 
-def sosineq(sos, symexpr, info1=None, info2=None):
+def sosineq(sos:sosprogram, symexpr:Add|MatrixBase, info1:list|str=None, info2=None) -> sosprogram:
     '''
     SOSINEQ   Adds an inequality constraint to the SOS program.
     SOSP = sosineq(SOSP,EXPR)
@@ -38,7 +41,7 @@ def sosineq(sos, symexpr, info1=None, info2=None):
 
     # Check if symexpr is a Matrix
     scal_expr = 0
-    if not isinstance(symexpr,sympy.MatrixBase):
+    if not isinstance(symexpr,MatrixBase):
         scal_expr = 1
 
     # Interval

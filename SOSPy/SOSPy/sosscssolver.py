@@ -1,14 +1,16 @@
 import numpy as np
 import scs
-from scipy.sparse import csc_matrix
+from scipy.sparse import csc_matrix, csr_matrix
 from scipy.linalg import block_diag
 import time
 
 from numpy.linalg import matrix_rank
 from .removeredundantrow import remove_redundant_row
 
+
 # The vec function as documented in api/cones
-def vec(S):
+def vec(S:np.ndarray) -> np.ndarray:
+    # The input S is 2-dimensional, the output is 1-dimensional
     n = S.shape[0]
     S = np.copy(S)
     S *= np.sqrt(2)
@@ -16,14 +18,15 @@ def vec(S):
     return S[np.triu_indices(n)]
 
 # The mat function as documented in api/cones
-def mat(s,n):
+def mat(s:np.ndarray, n:int) -> np.ndarray:
+    # The input s is 1-dimensional, the output is 2-dimensional
     S = np.zeros((n, n))
     S[np.triu_indices(n)] = s / np.sqrt(2)
     S = S + S.T
     S[range(n), range(n)] /= np.sqrt(2)
     return S
 
-def restore_symmetric_matrix(upper_triangle_values,n):    
+def restore_symmetric_matrix(upper_triangle_values:list, n:int) -> list:    
     matrix = [0]*(n**2)
     
     idx = 0
@@ -35,7 +38,7 @@ def restore_symmetric_matrix(upper_triangle_values,n):
     
     return matrix
 
-def make_symmetric(vector):
+def make_symmetric(vector:np.ndarray) -> np.ndarray:
     '''
     Since scs consider A as a symmetric matrix, and the function vec() consider A as symmetric by default, 
     we need to make A symmetric.
@@ -52,7 +55,7 @@ def make_symmetric(vector):
     
     return symmetric_matrix
 
-def sosscssolver(At,b,c,K,options={},verbose=1):
+def sosscssolver(At:csr_matrix, b:csc_matrix, c:csr_matrix, K:dict, options:dict={}, verbose:int=1) -> tuple[list, list, dict]:
     '''
     This function is to solve the optimization problem with SCS solver
 

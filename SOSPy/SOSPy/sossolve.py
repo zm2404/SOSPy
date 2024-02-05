@@ -2,7 +2,7 @@ import numpy as np
 import math
 from scipy.sparse import csr_matrix, lil_matrix, vstack, eye, kron, hstack, issparse, csc_matrix, coo_matrix
 import importlib
-import cvxpy as cp
+#import cvxpy as cp
 
 from .monomials import monomials
 from .inconvhull import inconvhull
@@ -14,21 +14,22 @@ from .sparsemultipart import sparsemultipart
 from .sosmoseksolver import sosmoseksolver
 from .sosscssolver import sosscssolver, mat
 from .soscvxoptsolver import soscvxoptsolver
+from .sosprogram import sosprogram
 
 
-def sparse_fliplr(A):
+def sparse_fliplr(A:csr_matrix) -> csr_matrix:
     A_coo = A.tocoo()
     flipped_col = A.shape[1] - A_coo.col - 1
     flipped_A = coo_matrix((A_coo.data, (A_coo.row, flipped_col)), shape=A_coo.shape)
     return flipped_A.tocsr()
 
-def sparse_flipud(A):
+def sparse_flipud(A:csr_matrix) -> csr_matrix:
     A_coo = A.tocoo()
     flipped_row = A.shape[0] - A_coo.row - 1
     flipped_A = coo_matrix((A_coo.data, (flipped_row, A_coo.col)), shape=A_coo.shape)
     return flipped_A.tocsr()
 
-def addextrasosvar(sos, I):
+def addextrasosvar(sos:sosprogram, I:list[int]) -> tuple[sosprogram, int]:
     feasextrasos = 1
     for i in I:
         numstates = sos.expr['Z'][i].shape[1]
@@ -152,7 +153,7 @@ def addextrasosvar(sos, I):
     return sos, feasextrasos
 
 
-def addextrasosvar2(sos, I):
+def addextrasosvar2(sos:sosprogram, I:list[int]) -> sosprogram:
     numstates = sos.expr['Z'][0].shape[1]
     for i in I:
         # Create extra variables
@@ -209,9 +210,8 @@ def addextrasosvar2(sos, I):
     return sos
 
 
-def processvars(sos, Atf, bf):
+def processvars(sos:sosprogram, Atf:csr_matrix, bf:csc_matrix) -> tuple[csr_matrix, csc_matrix, dict, coo_matrix]:
     # Processing all variables
-
     # Decision variables
     K = {}
     K['s'] = []
@@ -242,7 +242,7 @@ def processvars(sos, Atf, bf):
 
 
 
-def sossolve(sos,options=None,verbose=1):
+def sossolve(sos:sosprogram, options:dict=None, verbose:int=1) -> sosprogram:
     '''
     SOSSOLVE --- Solve a sum of squares program.
 
@@ -326,12 +326,11 @@ def sossolve(sos,options=None,verbose=1):
         info['feasratio'] = -1
         info['pinf'] = 1
         info['dinf'] = 1
-        #info['numerr'] = 0
-        #info['timing'] = 0
         info['cpusec'] = 0
         sos.solinfo['info'] = info
         sos.solinfo['solverOptions'] = options
         return sos
+    
     
     ##################################### Solve the problem #####################################
     try:
@@ -357,28 +356,6 @@ def sossolve(sos,options=None,verbose=1):
         sos.solinfo['solverOptions'] = options
         return sos
 
-
-    
-    # ##################################### try different solvers #####################################
-    # if SOLVER is not None:
-    #     ALTER_SOLVER = [item for item in ALL_SOLVER if item != SOLVER]
-    #     try:
-    #         x, y, info = soscvxpysolver(At, b, c, K, verbose, SOLVER=SOLVER)
-    #     except:
-    #         if len(ALTER_SOLVER) == 0:
-    #             print('All solvers failed.')
-    #         else:
-    #             print(SOLVER,' solver failed, trying ', ALTER_SOLVER[0], ' solver...')
-    #             for i in range(len(ALTER_SOLVER)):
-    #                 try:
-    #                     x, y, info = soscvxpysolver(At, b, c, K, verbose, SOLVER=ALTER_SOLVER[i])
-    #                     break
-    #                 except:
-    #                     if i == len(ALTER_SOLVER)-1:
-    #                         print('All solvers failed.')
-    #                     else:
-    #                         print(ALTER_SOLVER[i],' solver failed, trying ', ALTER_SOLVER[i+1], ' solver...')
-    
 
 
     ################################### record the solution ###################################
@@ -442,35 +419,33 @@ def sossolve(sos,options=None,verbose=1):
     # If you want to have them, comment/delete the return command above.
     # In the future version, these primal and dual solutions will be computed only
     # when they are needed. We don't want to store redundant info.
+    var = {}
+    primal = {}
+    dual = {}
     for i in range(sos.var['num']):
-        if sos.var['type'] == 'poly':
-            var = {}
-            var['primal'][i] = sos.solinfo['RRx'][sos.var['idx'][i]:sos.var['idx'][i+1]]
-            var['dual'][i] = sos.solinfo['RRy'][sos.var['idx'][i]:sos.var['idx'][i+1]]
-            sos.solinfo['var'] = var
-        elif sos.var['type'] == 'sos':
-            var = {}
-            primal = {}
-            dual = {}
+        if sos.var['type'][i] == 'poly':
+            primal[i] = sos.solinfo['RRx'][sos.var['idx'][i]:sos.var['idx'][i+1]]
+            dual[i] = sos.solinfo['RRy'][sos.var['idx'][i]:sos.var['idx'][i+1]]
+        elif sos.var['type'][i] == 'sos':
             primaltemp = sos.solinfo['RRx'][sos.var['idx'][i]:sos.var['idx'][i+1]]
             dualtemp = sos.solinfo['RRy'][sos.var['idx'][i]:sos.var['idx'][i+1]]
             primal[i] = np.array(primaltemp).reshape(int(math.sqrt(len(primaltemp))),int(math.sqrt(len(primaltemp)))).T
             dual[i] = np.array(dualtemp).reshape(int(math.sqrt(len(dualtemp))),int(math.sqrt(len(dualtemp)))).T
-            var['primal'] = primal
-            var['dual'] = dual
-            sos.solinfo['var'] = var
+    var['primal'] = primal
+    var['dual'] = dual
+    sos.solinfo['var'] = var
     
+    extravar = {}
+    primal = {}
+    dual = {}
     for i in range(sos.extravar['num']):
-        extravar = {}
-        primal = {}
-        dual = {}
         primaltemp = sos.solinfo['RRx'][sos.extravar['idx'][i]:sos.extravar['idx'][i+1]]
         dualtemp = sos.solinfo['RRy'][sos.extravar['idx'][i]:sos.extravar['idx'][i+1]]
         primal[i] = np.array(primaltemp).reshape(int(math.sqrt(len(primaltemp))),int(math.sqrt(len(primaltemp)))).T
         dual[i] = np.array(dualtemp).reshape(int(math.sqrt(len(dualtemp))),int(math.sqrt(len(dualtemp)))).T
-        extravar['primal'] = primal
-        extravar['dual'] = dual
-        sos.solinfo['extravar'] = extravar
+    extravar['primal'] = primal
+    extravar['dual'] = dual
+    sos.solinfo['extravar'] = extravar
 
     decvar = {}
     decvar['primal'] = sos.solinfo['RRx'][:sos.var['idx'][0]]

@@ -1,7 +1,11 @@
-from sympy import sympify
+from sympy import sympify, MatrixBase
 from .sosvar import sosvar
 
-def sossosvar(sos, Zsym):
+from .sosprogram import sosprogram
+from sympy.core.symbol import Symbol
+from sympy.core.add import Add
+
+def sossosvar(sos:sosprogram, Zsym:list[Symbol]|int) -> tuple[sosprogram, MatrixBase|Add]:
     '''
     SOSSOSVAR --- Declare a new sum of squares variable in
         an SOS program

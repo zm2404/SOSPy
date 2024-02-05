@@ -2,7 +2,6 @@ from .sosprogram import sosprogram
 from .findcommonZ import findcommonZ
 from .findsos import findsos
 from .getconstraint import getconstraint
-from .getdegrees import getdegrees
 from .getequation import getequation
 from .monomials import monomials
 from .sosconstr import sosconstr
@@ -16,6 +15,7 @@ from .sossetobj import sossetobj
 from .sossolve import sossolve
 from .sossosvar import sossosvar
 from .sosvar import sosvar
+from .sosvar import getdegrees
 from .spantiblkdiag import spantiblkdiag
 from .spblkdiag import spblkdiag
 from .inconvhull import inconvhull

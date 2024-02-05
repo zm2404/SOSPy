@@ -1,11 +1,33 @@
-from .getdegrees import getdegrees
-from scipy.sparse import csr_matrix, eye, hstack, vstack, find
+# from .getdegrees import getdegrees
+from scipy.sparse import csr_matrix, eye, vstack, find, csc_matrix
 from .getconstraint import getconstraint
-from sympy import symbols, Matrix, prod
+from .sosprogram import sosprogram
+from sympy import symbols, Matrix, prod, MatrixBase, poly
 import numpy as np
 
+from sympy.core.symbol import Symbol
+from sympy.core.add import Add
+
+def getdegrees(Z:list[Symbol], symvartable:list[Symbol]) -> np.ndarray:
+    '''
+    GETDEGREES --- Get degrees of monomials.
+
+    ZDEG = getdegrees(Z,VARTABLE)
+
+    Z is a list of monomials.
+    VARTABLE is the list of independent variables.
+    ZDEG is the degree of Z (in SOSTOOLS notation)
+    '''
+
+    p = np.sum(Z)
+    p = poly(p, symvartable)
+    coefmonmatr = [[*monomial] for monomial in p.monoms()]
+    Zdeg = np.array(coefmonmatr)
+
+    return  Zdeg
+
 # This function is used when Type == 'sos'
-def myAdecvarprod(A,decvar):
+def myAdecvarprod(A:csc_matrix, decvar:list[Symbol]) -> MatrixBase:
     rows, cols, _ = find(A)
 
     sympoly = Matrix.zeros(A.shape[1], 1)
@@ -19,11 +41,11 @@ def myAdecvarprod(A,decvar):
     return sympoly
 
 
-def sosvar(sos,Type,Zsym):
+def sosvar(sos:sosprogram, Type:str, Zsym:list[Symbol]) -> tuple[sosprogram, MatrixBase|Add]:
     '''
     SOSVAR --- Declare a new SOSP variable in an SOS program 
 
-    sos, V = sosvar(SOSP,TYPE,Z)
+    sos, VAR = sosvar(SOSP,TYPE,Z)
 
     SOSP is the sum of squares program.
     VAR is the new SOSP variable. This variable is described by TYPE and a 
@@ -56,7 +78,7 @@ def sosvar(sos,Type,Zsym):
 
     # Modify existing equations
     for i in range(sos.expr['num']):
-        sos.expr['At'][i] = vstack([sos.expr['At'][i], csr_matrix((sos.var['T'][var].shape[0], sos.expr['At'][i].shape[1]))])\
+        sos.expr['At'][i] = vstack([sos.expr['At'][i], csr_matrix((sos.var['T'][var].shape[0], sos.expr['At'][i].shape[1]))])
     
     # Modify existing objective
     if isinstance(sos.objective, list):

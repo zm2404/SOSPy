@@ -1,7 +1,7 @@
 import scipy
 import numpy as np
 
-def remove_redundant_row(A,b):
+def remove_redundant_row(A:np.ndarray,b:np.ndarray) -> tuple[np.ndarray, np.ndarray, list[int]]:
     ''' 
     Remove redundant rows from the matrix A, and do the same to the vector b.
     

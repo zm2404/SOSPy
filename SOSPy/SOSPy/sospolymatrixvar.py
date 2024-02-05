@@ -1,7 +1,11 @@
-from sympy import Matrix
+from sympy import Matrix, MatrixBase
 from .sospolyvar import sospolyvar
 
-def sospolymatrixvar(sos,ZSym,n,matrixstr=None):
+from .sosprogram import sosprogram
+from sympy.core.symbol import Symbol
+from sympy.core.add import Add
+
+def sospolymatrixvar(sos:sosprogram,ZSym:list[Symbol],n:list[int],matrixstr:str=None) -> tuple[sosprogram, MatrixBase|Add]:
     '''
     SOSPOLYMATRIXVAR --- Declare a polynomial matrix variable P in the sos program
     SOS of

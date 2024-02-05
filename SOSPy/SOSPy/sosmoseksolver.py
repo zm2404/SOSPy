@@ -3,8 +3,9 @@ import mosek
 import numpy as np
 import sys
 import time
+from scipy.sparse import csc_matrix, csr_matrix
 
-def sosmoseksolver(At,b,c,K,verbose=1):
+def sosmoseksolver(At:csr_matrix, b:csc_matrix, c:csr_matrix, K:dict, verbose:int=1) -> tuple[list, list, dict]:
     '''
     This function is to solve the optimization problem with MOSEK solver
 

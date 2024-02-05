@@ -4,14 +4,15 @@ import importlib
 import cvxpy as cp
 
 class sosprogram:
-    def __init__(self, vartable=[], decvartable=[]):
+    def __init__(self, vartable:list=[], decvartable:list=[]):
         # Check if SDP solvers are installed
         
-        sdp_solvers = ['cvxpy', 'mosek']    # so far only cvxpy and mosek are supported, but cvxpy can call other solvers
+        sdp_solvers = ['cvxpy', 'mosek', 'scs']    # so far only cvxpy and mosek are supported, but cvxpy can call other solvers
         if not any(importlib.util.find_spec(solver) is not None for solver in sdp_solvers):
             raise ImportError('No SDP solvers found.')
         
-        SOLVERS = ['MOSEK', 'CVXOPT', 'SCS', 'COPT', 'SDPA']
+        #SOLVERS = ['MOSEK', 'CVXOPT', 'SCS', 'COPT', 'SDPA']
+        SOLVERS = ['MOSEK', 'CVXOPT', 'SCS']
         INSTALLED_SOLVERS = cp.installed_solvers()
         SOLVER = [item for item in SOLVERS if item in INSTALLED_SOLVERS]
         if len(SOLVER) == 0:
@@ -54,15 +55,15 @@ class sosprogram:
 
         # self.solinfo contains information about the SDP solution of the problem.
         self.solinfo = {
-            'x': [], 
-            'y': [], 
-            'RRx': [], 
-            'RRy': [], 
-            'info': {},
-            'solverOptions': {},
-            'var' : {},
-            'extravar': {},
-            'decvar': {}
+            'x': [],            # primal solution, list of floats
+            'y': [],            # dual solution, list of floats
+            'RRx': [],          # list of floats
+            'RRy': [],          # list of floats
+            'info': {},         # dict
+            'solverOptions': {},# dict of solver options
+            'var' : {},         # dict of solution for each variable
+            'extravar': {},     # 
+            'decvar': {}        # 
         }
 
         # np.shape() reuturns (n,1) for a column vector, but returns (n,) for a row vector.

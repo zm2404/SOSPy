@@ -1,7 +1,8 @@
 from .inconvhull import inconvhull
 import numpy as np
+from scipy.sparse import csr_matrix
 
-def sparsemultipart(Z1,Z2,info):
+def sparsemultipart(Z1:csr_matrix,Z2:csr_matrix,info:list) -> np.ndarray:
     '''
     Find the elements in Z1 that are in the convex hull of Z2, where Z2 is bipartite
     '''

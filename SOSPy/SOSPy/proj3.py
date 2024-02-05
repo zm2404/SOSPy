@@ -1,7 +1,9 @@
 import numpy as np
 from fractions import Fraction
 
-def proj3(x0,A,b,N):
+from scipy.sparse import csr_matrix, csc_matrix
+
+def proj3(x0:np.ndarray, A:csr_matrix, b:csc_matrix, N:int) -> tuple[np.ndarray, int]:
     '''
     Orthogonal projection of the point x0 onto the subspace Ax=b 
 

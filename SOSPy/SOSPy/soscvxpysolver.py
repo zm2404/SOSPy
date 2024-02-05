@@ -1,9 +1,10 @@
 import cvxpy as cp
 import numpy as np
 import time
+from scipy.sparse import csr_matrix, csc_matrix
 
 
-def soscvxpysolver(At,b,c,K,verbose=1,SOLVER='CVXOPT'):
+def soscvxpysolver(At:csr_matrix, b:csc_matrix, c:csr_matrix, K:dict, verbose:int=1, SOLVER:str='CVXOPT') -> tuple[list, list, dict]:
     '''
     This function is to solve the optimization problem with MOSEK solver
 

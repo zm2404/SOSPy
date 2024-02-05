@@ -2,10 +2,11 @@ import numpy as np
 from itertools import combinations_with_replacement
 from scipy.sparse import csr_matrix
 import sympy
+from sympy.core.symbol import Symbol
 
 
 
-def monomials(vartable,degree):
+def monomials(vartable:int|list[Symbol],degree:list[int]) -> csr_matrix|list[Symbol]:
     '''
     Construct a vector of monomials with prespecified degrees.
     Z = monomials(VARTABLE, DEGREE)
@@ -47,7 +48,7 @@ def monomials(vartable,degree):
                 z[idx] += 1
             Z.append(z)
     
-    if isinstance(vartable, list) and all(isinstance(item, sympy.core.symbol.Symbol) for item in vartable):
+    if isinstance(vartable, list) and all(isinstance(item, Symbol) for item in vartable):
         res = []
         for row in Z:
             exprs = [var**deg for var, deg in zip(vartable, row)]

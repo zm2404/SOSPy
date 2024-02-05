@@ -1,7 +1,8 @@
 from scipy.sparse import csr_matrix, vstack, eye, issparse, lil_matrix
 from .findcommonZ import findcommonZ
+import numpy as np
 
-def getconstraint(Z):
+def getconstraint(Z:np.ndarray|csr_matrix) -> tuple[csr_matrix, csr_matrix]:
     '''
     GETCONSTRAINT --- Find constraint for sum of squares decomposition.
 
@@ -15,7 +16,7 @@ def getconstraint(Z):
 
     Then
 
-    Z'*Q*Z = F*ZZ      (where Q is the matrix form of q)
+    Z'*Q*Z = vec(Q')*A'*ZZ = F*ZZ     (where Q is the matrix form of q)
     '''
 
     # First write Z'*Q*Z as

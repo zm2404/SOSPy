@@ -1,6 +1,6 @@
-from scipy.sparse import csr_matrix, vstack, hstack, issparse
+from scipy.sparse import csr_matrix, vstack, hstack, issparse, dia_matrix, coo_matrix
 
-def spblkdiag(A1, A2):
+def spblkdiag(A1:dia_matrix, A2:dia_matrix) -> coo_matrix:
     '''
     SPBLKDIAG  Sparse block diagonal concatenation.
 

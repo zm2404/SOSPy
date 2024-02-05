@@ -1,7 +1,9 @@
-from sympy import Matrix
+from sympy import Matrix, MatrixBase
 from .sosconstr import sosconstr
+from .sosprogram import sosprogram
+from sympy.core.add import Add
 
-def soseq(sos, symexpr):
+def soseq(sos:sosprogram, symexpr:MatrixBase|Add) -> sosprogram:
     '''
     sos = soseq(sos,symexpr)
     SOSEQ --- Add a new equality constraint f(x) = 0

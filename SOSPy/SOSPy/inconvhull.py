@@ -3,6 +3,7 @@ from scipy.linalg import orth
 from scipy.spatial import ConvexHull
 from scipy.linalg import null_space
 import sympy
+from scipy.sparse import csr_matrix
 
 
 def useconvhulln(Z2):
@@ -59,7 +60,7 @@ def useconvhulln(Z2):
 
 
 
-def inconvhull(Z1, Z2):
+def inconvhull(Z1:csr_matrix, Z2:csr_matrix):
     # First, find the affine subspace where everything lives
     # (for instance, in the homogeneous case)
 

@@ -1,11 +1,14 @@
 import numpy as np
 import pandas as pd
-from sympy import expand, collect, poly, lambdify, Matrix, together, cancel, Add
+from sympy import expand, collect, poly, lambdify, Matrix, together, cancel, Add, MatrixBase
 from scipy.sparse import csr_matrix, lil_matrix
 from sympy.tensor.array import derive_by_array
 import sympy
 
-def sortNoRepeat(Z, Zin):
+from sympy.core.symbol import Symbol
+import sympy.core.add as add
+
+def sortNoRepeat(Z:np.ndarray, Zin:np.ndarray) -> np.ndarray:
     if Zin.size == 0:
         return Z
     if Z.size == 0:
@@ -20,7 +23,7 @@ def sortNoRepeat(Z, Zin):
     return Znew
 
 
-def approx_zero(expr, tolerance=1e-10):
+def approx_zero(expr:add.Add, tolerance:float=1e-10) -> add.Add:
     new_terms = []
     for term in expr.as_ordered_terms():
         coefficient, _ = term.as_coeff_Mul()
@@ -29,7 +32,7 @@ def approx_zero(expr, tolerance=1e-10):
     return Add(*new_terms)
 
 
-def poly_approx_zero(polynomial,tolerance=1e-10):
+def poly_approx_zero(polynomial:add.Add, tolerance:float=1e-10) -> add.Add:
     '''
     Round small coefficients to zero in a polynomial.
     '''
@@ -42,15 +45,15 @@ def poly_approx_zero(polynomial,tolerance=1e-10):
     return new_polynomial
 
 
-def getequation(expr, symvartable, decvartable, varmat):
+def getequation(expr:MatrixBase|add.Add, symvartable:list[Symbol], decvartable:list[Symbol], varmat:list[Symbol]) -> tuple[csr_matrix, csr_matrix, csr_matrix]:
     '''
-    function At,b,Z = getequation(expr,symvartable,decvartable,decvartablename)
+    function At,b,Z = getequation(expr,symvartable,decvartable,varmat)
 
     GETEQUATION --- Convert a symbolic expression to At, b, and Z
             used in an SOS program. In this format, 
     expr = Im kron [1][ C ]In kron Z
                    [x][   ]                                                                
-         = (b+x^TAt^T) Imn kron Z
+         = (b^T-x^TAt^T) Imn kron Z
     Inputs:
     expr: This expression is in symbolic format. 
     It may be matrix or scalar valued. At present, matrix-valued inputs should 
@@ -167,9 +170,9 @@ def getequation(expr, symvartable, decvartable, varmat):
         if decvartable:
             Zfull = np.array([])
             p = poly(FPexpr, vartable)
-            coefmonmatr = [[*monomial] for monomial in p.monoms()]
+            coefmonmatr = [[*monomial] for monomial in p.monoms()]  # power of each variable in each monomial
             Z = np.array(coefmonmatr)
-            Zfull = sortNoRepeat(Zfull, Z)
+            Zfull = sortNoRepeat(Zfull, Z)  # just in case there are repeated monomials
 
             Z = csr_matrix(Zfull)
             nmon, nvar = Z.shape
@@ -186,11 +189,11 @@ def getequation(expr, symvartable, decvartable, varmat):
 
             for k in range(len(coefmonmatr)):
                 s_ijk = coefmonmatr[k][0]
-                s_ijk_decvar = coefmon[k]
+                s_ijk_decvar = coefmon[k]   # the term before substituting decision variables
 
-                mon_k = coefmonmatr[k][1:]
-                ind_k = np.argmax(np.sum((Zfull == np.kron(np.ones((nmon,1)),mon_k)), axis=1))
-                coeffnts[ind_k * dimp, 0] = s_ijk
+                mon_k = coefmonmatr[k][1:]  # the monomial
+                ind_k = np.argmax(np.sum((Zfull == np.kron(np.ones((nmon,1)),mon_k)), axis=1))  # find the index of the monomial in Zfull, since Zfull is sorted
+                coeffnts[ind_k * dimp, 0] = s_ijk   # coefficient
                 coeffnts_decvar_dict[(ind_k*dimp, 0)] = s_ijk_decvar
 
         # if decvartable is empty.

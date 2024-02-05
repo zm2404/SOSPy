@@ -2,7 +2,7 @@ from scipy.sparse import csr_matrix, vstack, hstack, eye, issparse
 import numpy as np
 import pandas as pd
 
-def findcommonZ(Z1, Z2):
+def findcommonZ(Z1:csr_matrix, Z2:csr_matrix) -> tuple[csr_matrix, csr_matrix, csr_matrix]:
     '''
     FINDCOMMONZ --- Find common(distinct) Z and permutation matrices R1, R2
 

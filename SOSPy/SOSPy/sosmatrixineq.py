@@ -1,7 +1,9 @@
 from .sosineq import sosineq
 from sympy import symbols, Matrix
+from .sosprogram import sosprogram
+from sympy import MatrixBase
 
-def sosmatrixineq(sos,fM,option='quadraticMineq'):
+def sosmatrixineq(sos:sosprogram, fM:MatrixBase, option:str='quadraticMineq') -> sosprogram:
     '''
     SOSMATRIXINEQ --- Creates a SOS constraint from a matrix inequality
     constraint

@@ -1,6 +1,9 @@
 from .getequation import getequation
+from .sosprogram import sosprogram
+from sympy import MatrixBase
+from sympy.core.add import Add
 
-def sosconstr(sos,Type,symexpr):
+def sosconstr(sos:sosprogram,Type:str,symexpr:Add|MatrixBase) -> sosprogram:
     '''
     SOSCONSTR   Adds a constraint to the SOS program.
     SOSP = sosconstr(SOSP,TYPE,EXPR)

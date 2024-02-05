@@ -1,4 +1,4 @@
-from sympy import expand, Matrix
+from sympy import expand, Matrix, MatrixBase
 from .sosprogram import sosprogram
 from .sosineq import sosineq
 from .sossolve import sossolve
@@ -7,8 +7,10 @@ import math
 from scipy.linalg import sqrtm
 from .proj3 import proj3
 
+from sympy.core.add import Add
 
-def findsos(P,flag='abcdefgh',options=None,verbose=1):
+
+def findsos(P:MatrixBase|Add,flag:str='abcdefgh',options:dict=None,verbose:int=1) -> tuple[np.ndarray, list, np.ndarray, int]:
     '''
     FINDMATRIXSOS --- Find a sum of squares decomposition of a given matrix polynomial.
 

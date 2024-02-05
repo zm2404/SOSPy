@@ -1,13 +1,13 @@
 from cvxopt import matrix, spmatrix, solvers
 import numpy as np
 import math
-from scipy.sparse import tril, triu
+from scipy.sparse import tril, triu, csr_matrix, csc_matrix
 import time
 
 from numpy.linalg import matrix_rank
 from .removeredundantrow import remove_redundant_row
 
-def generate_Gs(indn,K,len_bef,total_len):
+def generate_Gs(indn:int,K:list,len_bef:int,total_len:int):
     '''
     indn is the index of PSD variable
     n = K['s'][indn] is the size of this PSD variable
@@ -39,7 +39,7 @@ def generate_Gs(indn,K,len_bef,total_len):
     return Gs
 
 
-def simplify_A(A):
+def simplify_A(A:csc_matrix) -> list[list]:
     '''
     The row vectors in A are the flatten symmtric matrix.
     This function simplifies A, for example: 
@@ -63,7 +63,7 @@ def simplify_A(A):
     return new_A
 
 
-def restore_symmetric_matrix(upper_triangle_values,n):    
+def restore_symmetric_matrix(upper_triangle_values:list,n:int) -> list:
     matrix = [0]*(n**2)
     
     idx = 0
@@ -76,7 +76,7 @@ def restore_symmetric_matrix(upper_triangle_values,n):
     return matrix
 
 
-def soscvxoptsolver(At,b,c,K,options,verbose=1):
+def soscvxoptsolver(At:csr_matrix, b:csc_matrix, c:csr_matrix, K:dict, options:dict={}, verbose:int=1) -> tuple[list, list, dict]:
     '''
     This function is to solve the optimization problem with CVXOPT solver
 

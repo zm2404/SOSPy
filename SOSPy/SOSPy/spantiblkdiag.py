@@ -1,7 +1,7 @@
-from scipy.sparse import csr_matrix, vstack, hstack, issparse
+from scipy.sparse import csr_matrix, vstack, hstack, issparse, dia_matrix, coo_matrix
 
 
-def spantiblkdiag(A1,A2):
+def spantiblkdiag(A1:dia_matrix,A2:dia_matrix) -> coo_matrix:
     '''
     SPANTIBLKDIAG  Sparse anti block diagonal concatenation.
 

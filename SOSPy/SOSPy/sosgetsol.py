@@ -1,7 +1,11 @@
 from IPython.display import display, Math
 import sympy
 
-def mysymsubs(expr, old, new ,digit):
+from .sosprogram import sosprogram
+from sympy.core.symbol import Symbol
+from sympy.core.add import Add
+
+def mysymsubs(expr:Symbol|Add, old:list[Symbol], new:list[float], digit:int) -> float|Add:
     '''
     MYSYMSUBS --- Fast symbolic substitution.
 
@@ -18,7 +22,7 @@ def mysymsubs(expr, old, new ,digit):
     return new_expr
 
 
-def sosgetsol(sos, V, solname=None, digit=5):
+def sosgetsol(sos:sosprogram, V, solname:str=None, digit:int=5) -> float|Add:
     '''
     SOSGETSOL --- Get the solution from a solved SOS program 
 
